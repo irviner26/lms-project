@@ -1,5 +1,6 @@
 package com.smkr.lms.Service;
 
+import com.smkr.lms.Handler.ObjectValidator;
 import com.smkr.lms.Model.Entity.Course;
 import com.smkr.lms.Model.Request.CourseRequest;
 import com.smkr.lms.Model.Response.CourseResponse;
@@ -18,15 +19,19 @@ public class CourseServiceIMPL implements CourseService{
 
     private final CourseRepository courseRepository;
 
+    private final ObjectValidator validator;
+
     @Override
     public CourseResponse getByCourseCode(String code) {
         Course course = courseRepository.findByCode(code)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NO_CONTENT, "User not found"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NO_CONTENT,
+                        "User not found"));
         return mapToCouRes(course);
     }
 
     @Override
     public CourseResponse createACourse(CourseRequest request) {
+        validator.validate(request);
         if (courseRepository.existsByNameOrCode(request.getName(), request.getCode())) {
             throw new ResponseStatusException(HttpStatus.CONFLICT,
                     "Course already exists, please choose another name or code.");
