@@ -1,15 +1,13 @@
 package com.smkr.lms.Controller;
 
+import com.smkr.lms.Model.Request.CourseRequest;
 import com.smkr.lms.Model.Response.CourseResponse;
 import com.smkr.lms.Model.Response.WebResponse;
 import com.smkr.lms.Service.CourseService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -46,6 +44,20 @@ public class CourseController {
                 .code(HttpStatus.OK.value())
                 .message(HttpStatus.OK.getReasonPhrase())
                 .data(courseResponses)
+                .error(null)
+                .build();
+    }
+
+    @PostMapping(
+            path = "/add",
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    public WebResponse<CourseResponse> addCourse(@RequestBody CourseRequest request) {
+        CourseResponse courseResponse = courseService.createACourse(request);
+        return WebResponse.<CourseResponse>builder()
+                .code(HttpStatus.OK.value())
+                .message(HttpStatus.OK.getReasonPhrase())
+                .data(courseResponse)
                 .error(null)
                 .build();
     }

@@ -1,6 +1,7 @@
 package com.smkr.lms.Service;
 
 import com.smkr.lms.Model.Entity.Course;
+import com.smkr.lms.Model.Request.CourseRequest;
 import com.smkr.lms.Model.Response.CourseResponse;
 import com.smkr.lms.Repository.CourseRepository;
 import lombok.AllArgsConstructor;
@@ -21,6 +22,22 @@ public class CourseServiceIMPL implements CourseService{
     public CourseResponse getByCourseCode(String code) {
         Course course = courseRepository.findByCode(code)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NO_CONTENT, "User not found"));
+        return mapToCouRes(course);
+    }
+
+    @Override
+    public CourseResponse createACourse(CourseRequest request) {
+        if (courseRepository.existsByNameOrCode(request.getName(), request.getCode())) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT,
+                    "Course already exists, please choose another name or code.");
+        }
+        Course course = Course.builder()
+                .name(request.getName())
+                .code(request.getCode())
+                .description(request.getDescription())
+                .teacher(request.getTeacher())
+                .build();
+        courseRepository.save(course);
         return mapToCouRes(course);
     }
 
